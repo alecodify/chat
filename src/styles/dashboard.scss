@@ -1,0 +1,101 @@
+// Responsive for mobile
+.online-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: red;
+    position: absolute;
+    top: -6px;
+    right: -4px;
+    border: 2px solid #FFF;
+    color: #FFF;
+    text-align: center;
+    font-size: 12px;
+}
+
+@media (max-width: "768px") {
+    .dashboard-container {
+        .dashboard-left {
+            .dashboard-left-wrapper {
+                flex-direction: column;
+
+                .dashboard-left-img {
+                    height: 60px;
+                    width: 60px;
+                }
+
+                .dashboard-left-name {
+                    text-align: center;
+                    font-size: 16px;
+                }
+
+                .dashboard-left-status {
+                    text-align: center;
+                    font-size: 12px;
+                }
+            }
+        }
+
+        .dashboard-left-message-container {
+
+            .dashboard-left-friend-img {
+                height: 40px;
+                width: 40px;
+            }
+
+            .dashboard-left-friend-name {
+                display: none;
+            }
+
+            .dashboard-left-friend-status {
+                font-size: 10px;
+            }
+
+            .online-dot {
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background-color: red;
+                position: absolute;
+                top: -8px;
+                right: -5px;
+                border: 2px solid #FFF;
+                color: #FFF;
+                text-align: center;
+                font-size: 12px;
+            }
+        }
+
+
+        .dashboard-center {
+            width: 75%;
+
+            .dashboard-center-header {
+                width: 90%;
+                padding: 0px 25px 0px 20px;
+
+                img {
+                    height: 45px;
+                    width: 45px;
+                }
+
+                .dashboard-center-wrapper {
+                    margin-left: 10px;
+
+                    h3 {
+                        font-size: 15px;
+                    }
+
+                    p {
+                        font-size: 12px;
+                    }
+                }
+            }
+        }
+
+        .dashboard-right {
+            display: none;
+            width: 0% !important;
+        }
+    }
+}
