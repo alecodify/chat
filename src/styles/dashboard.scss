@@ -15,6 +15,7 @@
 
 @media (max-width: "768px") {
     .dashboard-container {
+        position: relative;
         .dashboard-left {
             .dashboard-left-wrapper {
                 flex-direction: column;
@@ -44,11 +45,11 @@
             }
 
             .dashboard-left-friend-name {
-                display: none;
+                font-size: 10px;
             }
 
             .dashboard-left-friend-status {
-                font-size: 10px;
+                display: none;
             }
 
             .online-dot {
@@ -69,6 +70,8 @@
 
         .dashboard-center {
             width: 75%;
+            margin-top: 20px;
+            height: 95%;
 
             .dashboard-center-header {
                 width: 90%;
@@ -93,9 +96,55 @@
             }
         }
 
-        .dashboard-right {
-            display: none;
-            width: 0% !important;
+        .dashboard-friend-list{
+            background-color: transparent !important;
+            position: absolute;
+            left: 100px;
+            padding-left: 20px;
+            width: calc(100% - 120px);
+            height: calc(100% - 92%) !important;
+
+            .dashboard-find-friend-heading{
+                display: none;
+                margin: 0%;
+                padding: 0%;
+            }
+
+            .dashboard-right{
+                display: flex;
+                background-color: transparent;
+                padding-top: 12px;
+                overflow-x: auto; 
+                white-space: nowrap; 
+                -ms-overflow-style: none; 
+                scrollbar-width: none; 
+
+                &::-webkit-scrollbar {
+                    display: none; 
+                }
+
+                .dashboard-find-new-friend{
+                    display: flex;
+                    flex-direction: column !important;
+                    padding: 2px 0px;
+                    margin: 2px 0px;
+                    border: none;
+
+                    .dashboard-find-new-friend-name{
+                        font-size: 10px;
+                        width: 40px;
+                        text-align: center;
+                        padding-right: 8px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+
+                    .dashboard-find-new-friend-status{
+                        display: none;
+                    }
+                }
+            }
         }
     }
 }

@@ -14,12 +14,38 @@ const Form = ({ isSignIn = false, }) => {
 
   const navigate = useNavigate();
 
-  console.log(data)
+  const handleSubmit = async(e) =>{
+    e.preventDefault();
+
+    try {
+      const response = await fetch(`/api/${isSignIn ? "login" : "register"}`, {
+        method: "POST",
+        headers:{
+          "Content-Type": 'application/json'
+        },
+        body: JSON.stringify(data)
+      }) 
+
+      if (response.status === 400) {
+        alert("Invalid credentials")
+      } else{
+        const data = await response.json()
+        if (data.token) {
+          localStorage.setItem('user:token', data.token);
+          localStorage.setItem('user:detail', JSON.stringify(data.user));
+          navigate("/")
+        }
+      }
+    } catch (error) {
+      console.log("~ Register Error ☠️ ~ ", error);
+    }
+  }
+
   return (
     <div className='bg-white w-[350px] rounded-lg lg:w-[600px] h-[550px] lg:h-[600px] flex flex-col justify-center items-center shadow-lg'>
       <div className='text-3xl font-extrabold'>WELCOME {isSignIn && "BACK"}</div>
       <div className='text-xl font-light mb-4'>{isSignIn ? "Sign in to get explored" : "Sign up now to get started"}</div>
-      <form className='flex flex-col w-[100%] items-center justify-center' onSubmit={() => {console.log("Submitted")}}>
+      <form className='flex flex-col w-[100%] items-center justify-center' onSubmit={(e) => {handleSubmit(e)}}>
         {!isSignIn && <Input label={"Name"} name={"name"} placeholder={"Enter your name"} className={"mb-4 w-[60%] lg:w-1/2 "} value={data.name} onChange={(e) => setData({ ...data, name: e.target.value })} />}
         <Input label={"Email"} type='email' name={"email"} placeholder={"Enter your email"} className={"mb-4 w-[60%] lg:w-1/2 "} value={data.email} onChange={(e) => setData({ ...data, email: e.target.value })} />
         <Input label={"Password"} type='password' name={"password"} placeholder={"Enter your password"} className={"mb-6 w-[60%] lg:w-1/2 "} value={data.password} onChange={(e) => setData({ ...data, password: e.target.value })} />
