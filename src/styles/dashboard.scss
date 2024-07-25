@@ -38,7 +38,11 @@
         }
 
         .dashboard-left-message-container {
+             height: 70% !important;
 
+             .dashboard-left-conversations{
+               height: 100% !important;
+             }
             .dashboard-left-friend-img {
                 height: 40px;
                 width: 40px;

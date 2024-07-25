@@ -206,7 +206,10 @@ app.get('/api/message/:conversationId', async (req, res) => {
 app.get('/api/users/:userId', async (req, res) => {
     try {
         const userId = req.params.userId;
-        const users = await Users.find({ _id: { $ne: userId } });
+        const ongoingConversations = await Conversation.find({ members: { $all: [userId] } });
+        const conversationUsers = ongoingConversations.flatMap(conversation => conversation.members);
+        const uniqueConversationUsers = [...new Set(conversationUsers.filter(id => id !== userId))];
+        const users = await Users.find({ _id: { $ne: userId, $nin: uniqueConversationUsers } });
         const userData = Promise.all(users.map(async (user) => {
             return { user: { email: user.email, name: user.name, receiverId: user._id } }
         }))

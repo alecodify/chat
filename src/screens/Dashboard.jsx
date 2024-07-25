@@ -16,8 +16,6 @@ const Dashboard = () => {
     const [socket, setSocket] = useState(null);
     const messagesContainerRef = React.createRef();
 
-    console.log("conversations : >> ", conversations)
-
     useEffect(() => {
         const newSocket = io(`${SOCKET_URL}`, { transports: ['websocket'] });
 
@@ -43,7 +41,7 @@ const Dashboard = () => {
             console.log('active users :>> ', users);
         })
         socket?.on('getMessage', data => {
-            console.log("data :>> ", data);
+            // console.log("data :>> ", data);
             setMessages(prev => ({
                 ...prev, messages: [...prev.messages, {user: data.user, message: data.message}]
             }));
@@ -56,25 +54,8 @@ const Dashboard = () => {
           }
 	}, [messages])
 
-    useEffect(() => {
-        const loggedInUser = JSON.parse(localStorage.getItem('user:detail'))
-
-        const fetchData = async () => {
-            const response = await fetch(`/api/conversation/${loggedInUser.id}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            const data = await response.json();
-            setConversations(data)
-        }
-
-        fetchData();
-    }, [])
-
-    useEffect(() => {
-        const fetchUsers = async () => {
+    const fetchAllUsers = async () =>{
+        try {
             const response = await fetch(`/api/users/${user.id}`, {
                 method: "GET",
                 headers: {
@@ -83,10 +64,32 @@ const Dashboard = () => {
             });
             const data = await response.json();
             setusers(data);
+        } catch (error) {
+            console.log("~ users fetching error ☠️ ~",error)
         }
+    }
 
-        fetchUsers();
-    },[])
+    const fetchConversions = async ()=>{
+        const loggedInUser = JSON.parse(localStorage.getItem('user:detail'))
+        try {
+            const response = await fetch(`/api/conversation/${loggedInUser.id}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            const data = await response.json();
+            setConversations(data)
+       
+        } catch (error) {
+            console.log("~ conversations fetching error ☠️ ~",error)
+        }
+    };
+
+    useEffect(() => {
+        fetchAllUsers();
+        fetchConversions();
+    },[fetchAllUsers, fetchConversions])
 
     const fetchMessages = async (conversationId, receiver) => {
         const response = await fetch(`/api/message/${conversationId}?senderId=${user?.id}&&receiverId=${receiver?.receiverId}`, {
@@ -120,6 +123,8 @@ const Dashboard = () => {
             })
         })
         const response = await res.json();
+        await fetchAllUsers();
+        await fetchConversions();
     }
 
     const getInitial = (name) => {
@@ -137,9 +142,9 @@ const Dashboard = () => {
                     </div>
                 </div>
                 <hr />
-                <div className='dashboard-left-message-container ml-2 lg:ml-4'>
+                <div className='dashboard-left-message-container h-[80%] ml-2 lg:ml-4'>
                     <div className='text-primary text-lg lg:text-xl'>Messages</div>
-                    <div className='ml-0'>
+                    <div className='dashboard-left-conversations ml-0 h-[95%] overflow-y-scroll no-scrollbar'>
                         {conversations.length > 0 ? conversations.map(({ conversationId, user }) => (
                             <div key={conversationId} onClick={() => { fetchMessages(conversationId, user) }} className='flex items-center py-2 lg:py-4 border-b-2 lg:border-b-gray-400'>
                                 <div className='relative'>
@@ -164,7 +169,7 @@ const Dashboard = () => {
                         <div className='text-center flex items-center justify-center bg-secondary text-lg p-2 text-black rounded-[100%] border-2 border-gray-400 h-[35px] w-[35px] lg:h-[60px] lg:w-[60px]'>{getInitial(messages.receiver.name)}</div>
                         <div className='dashboard-center-wrapper ml-6 mr-auto'>
                             <h3 className='text-md font-medium lg:text-lg'>{messages.receiver.name}</h3>
-                            <p className='text-sm lg:text-md font-light'>online</p>
+                            <p className='text-sm lg:text-md font-light'>{messages.receiver.email}</p>
                         </div>
                         <div className='cursor-pointer'>
                             <VscCallOutgoing size={20} color='black' />
@@ -188,7 +193,7 @@ const Dashboard = () => {
                     <div className='py-10 px-4 w-full flex items-center relative'>
                         <Input type='text' placeholder={"type message here ..."} value={message} onChange={(e) => { setMessage(e.target.value) }} className={"w-[100%] lg:w-[100%] mr-16"} inputClassName={"p-4 border-0 shadow-md rounded-full bg-light focus:ring-0 focus:border-0 focus:outline-none outline-none"} />
                         <div className='absolute right-6 '><MdOutlineAdd size={20} color='black' /></div>
-                        <div className='absolute right-14 '><MdSend size={20} color='black' onClick={() => { sendMessage(), setMessage("") }} className={`${!message && 'pointer-events-none'}`} /></div>
+                        <div type='button' className='absolute right-14 '><MdSend size={20} color='black' onClick={() => { sendMessage(), setMessage("") }} className={`${!message && 'pointer-events-none'}`} /></div>
                     </div>
                 }
             </div>

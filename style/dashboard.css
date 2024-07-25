@@ -31,6 +31,12 @@
     text-align: center;
     font-size: 12px;
   }
+  .dashboard-container .dashboard-left-message-container {
+    height: 70% !important;
+  }
+  .dashboard-container .dashboard-left-message-container .dashboard-left-conversations {
+    height: 100% !important;
+  }
   .dashboard-container .dashboard-left-message-container .dashboard-left-friend-img {
     height: 40px;
     width: 40px;
