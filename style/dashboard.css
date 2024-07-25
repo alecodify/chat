@@ -13,6 +13,9 @@
 }
 
 @media (max-width: 768px) {
+  .dashboard-container {
+    position: relative;
+  }
   .dashboard-container .dashboard-left .dashboard-left-wrapper {
     flex-direction: column;
   }
@@ -33,10 +36,10 @@
     width: 40px;
   }
   .dashboard-container .dashboard-left-message-container .dashboard-left-friend-name {
-    display: none;
+    font-size: 10px;
   }
   .dashboard-container .dashboard-left-message-container .dashboard-left-friend-status {
-    font-size: 10px;
+    display: none;
   }
   .dashboard-container .dashboard-left-message-container .online-dot {
     width: 20px;
@@ -53,6 +56,8 @@
   }
   .dashboard-container .dashboard-center {
     width: 75%;
+    margin-top: 20px;
+    height: 95%;
   }
   .dashboard-container .dashboard-center .dashboard-center-header {
     width: 90%;
@@ -71,8 +76,48 @@
   .dashboard-container .dashboard-center .dashboard-center-header .dashboard-center-wrapper p {
     font-size: 12px;
   }
-  .dashboard-container .dashboard-right {
+  .dashboard-container .dashboard-friend-list {
+    background-color: transparent !important;
+    position: absolute;
+    left: 100px;
+    padding-left: 20px;
+    width: calc(100% - 120px);
+    height: 8% !important;
+  }
+  .dashboard-container .dashboard-friend-list .dashboard-find-friend-heading {
     display: none;
-    width: 0% !important;
+    margin: 0%;
+    padding: 0%;
+  }
+  .dashboard-container .dashboard-friend-list .dashboard-right {
+    display: flex;
+    background-color: transparent;
+    padding-top: 12px;
+    overflow-x: auto;
+    white-space: nowrap;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .dashboard-container .dashboard-friend-list .dashboard-right::-webkit-scrollbar {
+    display: none;
+  }
+  .dashboard-container .dashboard-friend-list .dashboard-right .dashboard-find-new-friend {
+    display: flex;
+    flex-direction: column !important;
+    padding: 2px 0px;
+    margin: 2px 0px;
+    border: none;
+  }
+  .dashboard-container .dashboard-friend-list .dashboard-right .dashboard-find-new-friend .dashboard-find-new-friend-name {
+    font-size: 10px;
+    width: 40px;
+    text-align: center;
+    padding-right: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .dashboard-container .dashboard-friend-list .dashboard-right .dashboard-find-new-friend .dashboard-find-new-friend-status {
+    display: none;
   }
 }

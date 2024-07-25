@@ -2,15 +2,59 @@ import React, { useEffect, useState } from 'react'
 import { Input } from '../components';
 import { VscCallOutgoing } from "react-icons/vsc";
 import { MdSend, MdOutlineAdd } from "react-icons/md";
+import { io } from "socket.io-client";
+import { SOCKET_URL } from "../../config.json";
 import "../styles/dashboard.scss";
 
 const Dashboard = () => {
-    const [messageCount, setMessageCount] = useState(1);
+    const [messageCount, setMessageCount] = useState({});
     const [user, setUser] = useState(JSON.parse(localStorage.getItem('user:detail')))
     const [conversations, setConversations] = useState([]);
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
-    const [allUsers, setAllUsers] = useState([]);
+    const [users, setusers] = useState([]);
+    const [socket, setSocket] = useState(null);
+    const messagesContainerRef = React.createRef();
+
+    console.log("conversations : >> ", conversations)
+
+    useEffect(() => {
+        const newSocket = io(`${SOCKET_URL}`, { transports: ['websocket'] });
+
+        newSocket.on('connect', () => {
+            console.log('Socket connected');
+        });
+    
+        newSocket.on('disconnect', () => {
+            console.log('Socket disconnected');
+        });
+    
+        newSocket.on('connect_error', (err) => {
+            console.error('Socket connection error:', err);
+        });
+    
+        setSocket(newSocket);
+      
+    }, [])
+
+    useEffect(() => {
+        socket?.emit('addUser', user.id);
+        socket?.on('getUsers', users => {
+            console.log('active users :>> ', users);
+        })
+        socket?.on('getMessage', data => {
+            console.log("data :>> ", data);
+            setMessages(prev => ({
+                ...prev, messages: [...prev.messages, {user: data.user, message: data.message}]
+            }));
+        })
+    }, [socket])
+
+    useEffect(() => {
+        if (messagesContainerRef.current) {
+            messagesContainerRef.current.scrollTo(0, messagesContainerRef.current.scrollHeight);
+          }
+	}, [messages])
 
     useEffect(() => {
         const loggedInUser = JSON.parse(localStorage.getItem('user:detail'))
@@ -26,6 +70,10 @@ const Dashboard = () => {
             setConversations(data)
         }
 
+        fetchData();
+    }, [])
+
+    useEffect(() => {
         const fetchUsers = async () => {
             const response = await fetch(`/api/users/${user.id}`, {
                 method: "GET",
@@ -34,12 +82,11 @@ const Dashboard = () => {
                 },
             });
             const data = await response.json();
-            setAllUsers(data);
+            setusers(data);
         }
 
         fetchUsers();
-        fetchData();
-    }, [])
+    },[])
 
     const fetchMessages = async (conversationId, receiver) => {
         const response = await fetch(`/api/message/${conversationId}?senderId=${user?.id}&&receiverId=${receiver?.receiverId}`, {
@@ -53,6 +100,13 @@ const Dashboard = () => {
     }
 
     const sendMessage = async () => {
+        setMessage("");
+        socket?.emit('sendMessage', {
+            conversationId: messages?.conversationId,
+            senderId: user?.id,
+            message: message,
+            receiverId: messages?.receiver?.receiverId
+        })
         const res = await fetch(`/api/message`, {
             method: 'POST',
             headers: {
@@ -66,7 +120,6 @@ const Dashboard = () => {
             })
         })
         const response = await res.json();
-        setMessage("");
     }
 
     const getInitial = (name) => {
@@ -91,7 +144,7 @@ const Dashboard = () => {
                             <div key={conversationId} onClick={() => { fetchMessages(conversationId, user) }} className='flex items-center py-2 lg:py-4 border-b-2 lg:border-b-gray-400'>
                                 <div className='relative'>
                                     <div className='dashboard-left-friend-img bg-secondary text-center flex items-center justify-center text-lg p-2 text-black rounded-[100%] border-2 border-gray-400 h-[35px] w-[35px] lg:h-[60px] lg:w-[60px]'>{getInitial(user.name)}</div>
-                                    <div className={`online-dot ${messageCount === 0 ? "hidden" : ""}`}>1</div>
+                                    <div className={`online-dot lg:hidden ${messageCount === 0 ? "hidden" : ""}`}>{}</div>
                                 </div>
                                 <div className='ml-2 lg:ml-6'>
                                     <h3 className='dashboard-left-friend-name text-md font-medium lg:text-lg'>{user.name}</h3>
@@ -122,7 +175,9 @@ const Dashboard = () => {
                 <div className='h-[75%] border w-full overflow-y-scroll no-scrollbar'>
                     <div className='h-[1000px] px-6 lg:px-10 py-14 '>
                         {messages.messages?.length > 0 ? messages.messages?.map(({ message, user: { id } = {} }) => (
-                            <div className={`w-[70%] lg:max-w-[45%] text-sm lg:text-md p-4 rounded-b-xl mb-6 ${id === user.id ? "bg-blue-400 rounded-tl-xl ml-auto text-white" : "rounded-tr-xl bg-gray-300"}`}>{message}</div>
+                           <div>
+                               <div ref={messagesContainerRef} className={`w-[70%] lg:max-w-[45%] text-sm lg:text-md p-4 rounded-b-xl mb-6 ${id === user.id ? "bg-blue-400 rounded-tl-xl ml-auto text-white" : "rounded-tr-xl bg-gray-300"}`}>{message}</div>
+                           </div>
                         )) : (
                             <div className='text-center text-sm lg:text-lg lg:font-semibold mt-40'>No Conversation Selected</div>
                         )}
@@ -141,7 +196,7 @@ const Dashboard = () => {
             <div className='dashboard-friend-list w-[25%] h-screen'>
                 <div className='dashboard-find-friend-heading text-primary mt-10 ml-6 text-lg lg:text-xl'>People</div>
                 <div className='dashboard-right h-[90%] overflow-y-scroll no-scrollbar'>
-                    {allUsers.length > 0 ? allUsers.map(({ userId, user }) => (
+                    {users.length > 0 ? users.map(({ userId, user }) => (
                         <div key={userId} onClick={() => { fetchMessages("new", user) }} className='dashboard-find-new-friend flex items-center mx-4  py-2 lg:py-4 border-b-2 lg:border-b-gray-400'>
                             <div className='relative'>
                                 <div className='dashboard-find-new-friend-img rounded-[100%] border-2 flex items-center justify-center text-center bg-red-400 text-white font-bold border-blue-300 p-4 h-[35px] w-[35px] lg:h-[60px] lg:w-[60px]'>{getInitial(user.name)}</div>
