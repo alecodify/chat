@@ -4,10 +4,10 @@ import { VscCallOutgoing } from "react-icons/vsc";
 import { MdSend, MdOutlineAdd } from "react-icons/md";
 import { io } from "socket.io-client";
 import { SOCKET_URL } from "../../config.json";
+import { useNavigate } from "react-router-dom";
 import "../styles/dashboard.scss";
 
 const Dashboard = () => {
-    const [messageCount, setMessageCount] = useState({});
     const [user, setUser] = useState(JSON.parse(localStorage.getItem('user:detail')))
     const [conversations, setConversations] = useState([]);
     const [message, setMessage] = useState("");
@@ -15,6 +15,7 @@ const Dashboard = () => {
     const [users, setusers] = useState([]);
     const [socket, setSocket] = useState(null);
     const messagesContainerRef = React.createRef();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const newSocket = io(`${SOCKET_URL}`, { transports: ['websocket'] });
@@ -138,7 +139,7 @@ const Dashboard = () => {
                     <div><img src="/user.png" alt="" className='dashboard-left-img rounded-[100%] border-2 border-blue-300 h-[35px] w-[35px] lg:h-[75px] lg:w-[75px]' /></div>
                     <div className='ml-2 lg:ml-4'>
                         <h3 className='dashboard-left-name text-lg font-medium lg:text-2xl'>{user.name}</h3>
-                        <p className='dashboard-left-status text-sm lg:text-lg font-normal'>My Account</p>
+                        <p onClick={() => {navigate("/users/sign_in")}} className='dashboard-left-status text-sm lg:text-lg font-normal'>LogOut</p>
                     </div>
                 </div>
                 <hr />
@@ -149,7 +150,7 @@ const Dashboard = () => {
                             <div key={conversationId} onClick={() => { fetchMessages(conversationId, user) }} className='flex items-center py-2 lg:py-4 border-b-2 lg:border-b-gray-400'>
                                 <div className='relative'>
                                     <div className='dashboard-left-friend-img bg-secondary text-center flex items-center justify-center text-lg p-2 text-black rounded-[100%] border-2 border-gray-400 h-[35px] w-[35px] lg:h-[60px] lg:w-[60px]'>{getInitial(user.name)}</div>
-                                    <div className={`online-dot lg:hidden ${messageCount === 0 ? "hidden" : ""}`}>{}</div>
+                                    <div className={`online-dot lg:hidden`}>{}</div>
                                 </div>
                                 <div className='ml-2 lg:ml-6'>
                                     <h3 className='dashboard-left-friend-name text-md font-medium lg:text-lg'>{user.name}</h3>

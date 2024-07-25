@@ -24,16 +24,8 @@ function App() {
               <Dashboard />
             </ProtectedRoute>
           }/>
-          <Route path="/users/sign_in" element={
-            <ProtectedRoute>
-              <Form isSignIn={true} />
-            </ProtectedRoute>
-            } />
-          <Route path="/users/sign_up" element={
-            <ProtectedRoute>
-              <Form isSignIn={false} />
-            </ProtectedRoute>
-            } />
+          <Route path="/users/sign_in" element={ <Form isSignIn={true} />} />
+          <Route path="/users/sign_up" element={ <Form isSignIn={false} /> } />
         </Routes>
       </div>
     </Router>
