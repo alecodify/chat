@@ -3,13 +3,14 @@ const bcryptjs = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const dotenv = require("dotenv")
 const cors = require("cors")
-const io = require("socket.io")(8080, {
+dotenv.config()
+
+const io = require("socket.io")(process.env.SOCKET_URL, {
     cors:{
         origin: "http://localhost:5173"
     }
 })
 
-dotenv.config()
 
 const app = express()
 const port = 8000
